@@ -6,7 +6,6 @@
 #include <cstring>
 #include <cmath>
 
-
 #include "LHAPDF/LHAPDF.h"
 
 #include "constant.h"
