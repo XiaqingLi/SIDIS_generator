@@ -23,6 +23,8 @@ int main(int argc, char * argv[]){
   mysidis.SetHadron("pi+");//set detected hadron: pi+, pi-, pi0, K+, K-, K0, p
   mysidis.SetPDFset("CJ15lo");//choose a PDF set
   mysidis.SetFFset("DSSFFlo");//choose an FF set
+  mysidis.SetSFmode(1); //chose a mode for structure function
+
   
   TLorentzVector lp, Ph;//scattered electron and detected hadron
   double weight;//weight of event
