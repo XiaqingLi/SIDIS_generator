@@ -87,6 +87,7 @@ class Lsidis{
   double Xseed[6];//start point for MCMC
   double volume;//simulation variables volume
   double sigmatotal;//total cross section within the simulation range [Xmin, Xmax]
+  int SFmode;//mode for structure function
   TH1D * Xhisto[6];//for Gibbs sampler
   TF1 * TF_Maxwell;//for R1 sampling
   TF1 * TF_xi;
@@ -104,6 +105,7 @@ class Lsidis{
   int GetHadronID();//Get pid of the detected hadron
   int GetHadronCharge();//Get charge of the detected hadron
   int CheckHadron();
+  int SetSFmode(const int SFmode_);//Set mode for structure function
   int SetPDFset(const char * set);//Set unpolarized collinear PDF set
   int SetFFset(const char * set);//Set unpolarized collinear FF set
   int CheckPDFset();
@@ -128,7 +130,9 @@ class Lsidis{
   TLorentzVector GetLorentzVector(const char * part);//Get 4-momentum of a particle of current event
   int GetPDFs();//Get PDFs at current x, Q2
   int GetFFs();//Get FFs at current z, Q2
-  double FUUT();//Calculate structure function F_UU,T at current x, z, Q2, Pt
+  double FUUT();//Get structure function F_UU,T at current x, z, Q2, Pt
+  double getFUUT_p(const int SFmode_);//Get stucture function of the proton from the chosen mode
+  double getFUUT_n(const int SFmode_);//Get stucture function of the neutron from the chosen mode	
   double dsigma(const int mode);//Differential cross section in dsigma/dx dy dz dPt2 dphih dphiS
   int SetRange(const double * mins, const double * maxs);//Uniform sampling range
   double GenerateEvent(const int mode, const int method);//Generate a sidis event
@@ -155,6 +159,7 @@ Lsidis::Lsidis(){//constructor
   Slepton = 0;
   SNL = 0;
   SNT = 0;
+  SFmode = 0; //default mode for structure function
 }
 
 Lsidis::Lsidis(const TLorentzVector l, const TLorentzVector P){//constructor with initial state
@@ -267,6 +272,11 @@ int Lsidis::CheckHadron(){//check the status of final hadron
     perror("No hadron initialized!");
     return -1;
   }
+}
+
+int Lsidis::SetSFmode(const int SFmode_){
+  SFmode = SFmode_;
+  return 0;
 }
 
 int Lsidis::SetPDFset(const char * set){//set collinear unpolarized pdf set
@@ -616,45 +626,45 @@ TLorentzVector Lsidis::GetLorentzVector(const char * part){//Get 4-momentum of a
   }
 }
 
-int Lsidis::GetPDFs(){//get PDFs of proton at current x, Q2
-  if (!st_pdf){
-    perror("No PDF set initialized!");
-    return -1;
-  }
-  if (physics_control){
-    f1[0] = pdfs->xfxQ2(2, x, Q2) / x;
-    f1[1] = pdfs->xfxQ2(1, x, Q2) / x;
-    f1[2] = pdfs->xfxQ2(3, x, Q2) / x;
-    f1[3] = pdfs->xfxQ2(-2, x, Q2) / x;
-    f1[4] = pdfs->xfxQ2(-1, x, Q2) / x;
-    f1[5] = pdfs->xfxQ2(-3, x, Q2) / x;
-  }
-  else {
-    for (int i = 0; i < 6; i++)
-      f1[i] = 0;
-  }
-  return 0;
-}
+// int Lsidis::GetPDFs(){//get PDFs of proton at current x, Q2
+//   if (!st_pdf){
+//     perror("No PDF set initialized!");
+//     return -1;
+//   }
+//   if (physics_control){
+//     f1[0] = pdfs->xfxQ2(2, x, Q2) / x;
+//     f1[1] = pdfs->xfxQ2(1, x, Q2) / x;
+//     f1[2] = pdfs->xfxQ2(3, x, Q2) / x;
+//     f1[3] = pdfs->xfxQ2(-2, x, Q2) / x;
+//     f1[4] = pdfs->xfxQ2(-1, x, Q2) / x;
+//     f1[5] = pdfs->xfxQ2(-3, x, Q2) / x;
+//   }
+//   else {
+//     for (int i = 0; i < 6; i++)
+//       f1[i] = 0;
+//   }
+//   return 0;
+// }
 
-int Lsidis::GetFFs(){//get FFs to hadron at current z, Q2
-  if (!st_ff){
-    perror("No FF set initialized!");
-    return -1;
-  }
-  if (physics_control){
-    D1[0] = ffs->xfxQ2(2, z, Q2) / z;//u
-    D1[1] = ffs->xfxQ2(1, z, Q2) / z;//d
-    D1[2] = ffs->xfxQ2(3, z, Q2) / z;//s
-    D1[3] = ffs->xfxQ2(-2, z, Q2) / z;//ubar
-    D1[4] = ffs->xfxQ2(-1, z, Q2) / z;//dbar
-    D1[5] = ffs->xfxQ2(-3, z, Q2) / z;//sbar
-  }
-  else {
-    for (int i = 0; i < 6; i++)
-      D1[i] = 0;
-  }
-  return 0;
-}
+// int Lsidis::GetFFs(){//get FFs to hadron at current z, Q2
+//   if (!st_ff){
+//     perror("No FF set initialized!");
+//     return -1;
+//   }
+//   if (physics_control){
+//     D1[0] = ffs->xfxQ2(2, z, Q2) / z;//u
+//     D1[1] = ffs->xfxQ2(1, z, Q2) / z;//d
+//     D1[2] = ffs->xfxQ2(3, z, Q2) / z;//s
+//     D1[3] = ffs->xfxQ2(-2, z, Q2) / z;//ubar
+//     D1[4] = ffs->xfxQ2(-1, z, Q2) / z;//dbar
+//     D1[5] = ffs->xfxQ2(-3, z, Q2) / z;//sbar
+//   }
+//   else {
+//     for (int i = 0; i < 6; i++)
+//       D1[i] = 0;
+//   }
+//   return 0;
+// }
 
 // double Lsidis::FUUT(){//calculate the structure function F_UU,T at current x, z, Q2, Pt
 //   if(!(st_nucleus && st_hadron)){
@@ -681,21 +691,37 @@ double Lsidis::FUUT(){//calculate the structure function F_UU,T at current x, z,
     perror("Missing initialization of nucleus and hadron!");
     return -1;
   }
-      printf("HHHHHIIIIIIIDDDDDD=======");
-
   double FFp = 0.0, FFn = 0.0;
   if (physics_control){
     if (Np > 0 && Wp > MXminp)
-      FFp = Np * getFUUT_p_TL(x, z, Q2, Pt, hid);
+      FFp = Np * getFUUT_p(SFmode);
     if (Nn > 0 && Wp > MXminn)
-      FFn = Nn * getFUUT_n_TL(x, z, Q2, Pt, hid);
+      FFn = Nn * getFUUT_n(SFmode);
   }
   return FFp + FFn;
 }
 
+double Lsidis::getFUUT_p(const int SFmode_){
+  if(SFmode_==0)	
+    return StructureFunction::getFUUT_p_TL(x, z, Q2, Pt, hid);
+  else if(SFmode_==1)
+    return StructureFunction::getFUUT_p_FL(x, z, Q2, Pt, hid);
+  else{
+    perror("No such struncture funtion mode");
+    return -1;
+  }
+}
 
-
-
+double Lsidis::getFUUT_n(const int SFmode_){
+  if(SFmode_==0)	
+    return StructureFunction::getFUUT_n_TL(x, z, Q2, Pt, hid);
+  else if(SFmode_==1)
+    return StructureFunction::getFUUT_n_FL(x, z, Q2, Pt, hid);
+  else{
+    perror("No such struncture funtion mode");
+    return -1;
+  }
+}
 
 double Lsidis::dsigma(const int mode = 0){//calculate the differential cross section at current x, y, z, Pt2, phih, phiS
   double ds = 0.0;
