@@ -705,7 +705,7 @@ double Lsidis::getFUUT_p(const int SFmode_){
   if(SFmode_==0)	
     return StructureFunction::getFUUT_p_TL(x, z, Q2, Pt, hid);
   else if(SFmode_==1)
-    return StructureFunction::getFUUT_p_FL(x, z, Q2, Pt, hid);
+    return StructureFunction::getFUUT_n_FD(x, z, Q2, Pt, hid);
   else{
     perror("No such struncture funtion mode");
     return -1;
@@ -716,7 +716,7 @@ double Lsidis::getFUUT_n(const int SFmode_){
   if(SFmode_==0)	
     return StructureFunction::getFUUT_n_TL(x, z, Q2, Pt, hid);
   else if(SFmode_==1)
-    return StructureFunction::getFUUT_n_FL(x, z, Q2, Pt, hid);
+    return StructureFunction::getFUUT_n_FD(x, z, Q2, Pt, hid);
   else{
     perror("No such struncture funtion mode");
     return -1;
