@@ -97,7 +97,7 @@ namespace StructureFunction{
 /////////////////////////////////  Mode 1  ///////////////////////////////
 ////////////// use TMD grids and interpolation for PDF and FF ////////////
 //////// notation: x=x_bj; Q2=Q^2 (GeV); kt=k_perp; pt=p_perp; Pt=PhT; 
-  TFile *file = new TFile("/Users/xiaqingli/Projects/EIC/SIDIS_generator/grids/grids_hist_MMHT_old.root");
+  TFile *file = new TFile("sample_grids.root");
   TH3D *h_f1u = (TH3D*)file->Get("f1u");
   TH3D *h_D1u = (TH3D*)file->Get("D1u");  
   TH3D *h_f1d = (TH3D*)file->Get("f1d");
